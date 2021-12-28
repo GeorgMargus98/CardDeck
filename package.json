@@ -8,9 +8,7 @@
     "build:ts": "tsc",
     "dev": "nodemon src/app.ts",
     "lint": "eslint . --ext .ts",
-    "migrate": "node dist/database/migrate.js",
-    "start": "node .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "migrate": "node dist/database/migrate.js"
   },
   "keywords": [],
   "author": "",
