@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import deckRouter from "./controllers/deck";
-import cardRouter from "./controllers/card";
+import deckRouter from './controllers/deck';
+import cardRouter from './controllers/card';
 
 const app: express.Application = express();
 

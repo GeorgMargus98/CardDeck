@@ -1,4 +1,4 @@
-import {knex} from "knex";
+import { knex } from 'knex';
 
 const dbConfig = {
     client: 'postgresql',
@@ -7,9 +7,8 @@ const dbConfig = {
         port: 5432,
         user: 'postgres',
         password: 'postgres',
-        database: 'postgres',
-    },
+        database: 'postgres'
+    }
 };
-
 
 export const db = knex(dbConfig);

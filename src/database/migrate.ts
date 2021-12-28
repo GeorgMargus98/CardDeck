@@ -1,7 +1,7 @@
-import {db} from "./connection";
-import {cardValues, Suit} from "../types/card";
+import { db } from './connection';
+import { cardValues, Suit } from '../types/card';
 
-(async() => {
+(async () => {
     try {
         await db.schema.dropTableIfExists('deck');
         await db.schema.dropTableIfExists('card_to_deck');
