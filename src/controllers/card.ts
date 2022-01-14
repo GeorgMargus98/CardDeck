@@ -3,12 +3,15 @@ import { getCards, deleteCards } from '../database/queries/card';
 import { getDeck } from '../database/queries/deck';
 
 async function drawCards (req: Request, res: Response) {
+    if (req.query.count <= 0) {
+        return res.status(400).send({ error: 'Invalid count' });
+    }
+    const count = req.query.count || 1;
     const { deckId } = req.params;
     try {
         if (!await getDeck(deckId)) {
             return res.status(404).send({ error: 'Deck not found' });
         }
-        const count = req.query.count || 1;
         const cards = await getCards(deckId, parseInt(count.toString()));
         if (cards.length < count) {
             return res.status(400).send({ error: 'Not enough cards' });
