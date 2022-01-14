@@ -6,10 +6,13 @@ async function drawCards (req: Request, res: Response) {
     const { deckId } = req.params;
     try {
         if (!await getDeck(deckId)) {
-            return res.status(404).send({ error: 'Deck not found!' });
+            return res.status(404).send({ error: 'Deck not found' });
         }
         const count = req.query.count || 1;
         const cards = await getCards(deckId, parseInt(count.toString()));
+        if (cards.length < count) {
+            return res.status(400).send({ error: 'Not enough cards' });
+        }
         await deleteCards(deckId, cards.map(card => card.code));
         return res.json({ cards });
     } catch (err) {
