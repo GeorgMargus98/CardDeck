@@ -61,7 +61,7 @@ async function openDeck (req: Request<{id: string}, {}, {}>, res: Response) {
 }
 
 const router = Router();
+router.get('/:id', openDeck);
 router.post('/', createDeck);
-router.get('/open/:id', openDeck);
 
 export default router;

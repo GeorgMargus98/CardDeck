@@ -18,6 +18,6 @@ async function drawCards (req: Request, res: Response) {
 }
 
 const router = Router();
-router.get('/draw/:deckId', drawCards);
+router.get('/:deckId', drawCards);
 
 export default router;
