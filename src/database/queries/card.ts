@@ -9,7 +9,7 @@ async function getCard (suit: Suit, value: CardValue) {
 export function getCards (deckId: string, count?: number): Promise<Card[]> {
     const query = db<Card>('card')
         .join('card_to_deck AS ctd', 'card.code', '=', 'ctd.card_code')
-        .where({ deck_id: deckId, is_drawn: false })
+        .where({ deck_id: deckId })
         .select('card.*')
         .orderBy('card_index');
     if (count && count > 0) {
@@ -18,17 +18,13 @@ export function getCards (deckId: string, count?: number): Promise<Card[]> {
     return query;
 }
 
-export async function markCardsAsDrawn (deckId: string, cardCodes: string[]) {
-    return db('card_to_deck')
-        .where({ deck_id: deckId, is_drawn: false })
-        .whereIn('card_code', cardCodes)
-        .update({ is_drawn: true })
-        .returning('*');
+export async function deleteCards (deckId: string, cardCodes: string[]) {
+    db('card_to_deck').where({ deck_id: deckId }).whereIn('card_code', cardCodes).delete();
 }
 
 export async function getRemainingCards (deckId: string) {
     return (await db('card_to_deck')
-        .where({ deck_id: deckId, is_drawn: false })
+        .where({ deck_id: deckId })
         .count({ count: '*' }))[0].count;
 }
 

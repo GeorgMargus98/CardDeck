@@ -22,7 +22,6 @@ import { cardValues, Suit } from '../types/card';
         await db.schema.createTable('card_to_deck', (table) => {
             table.uuid('deck_id');
             table.string('card_code', 3).notNullable();
-            table.boolean('is_drawn').notNullable().defaultTo(false);
             table.specificType('card_index', 'smallint').notNullable();
             table.foreign('card_code').references('code').inTable('card');
             table.primary(['deck_id', 'card_code']);

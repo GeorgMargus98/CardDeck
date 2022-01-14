@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { getCards, markCardsAsDrawn } from '../database/queries/card';
+import { getCards, deleteCards } from '../database/queries/card';
 import { getDeck } from '../database/queries/deck';
 
 async function drawCards (req: Request, res: Response) {
@@ -10,7 +10,7 @@ async function drawCards (req: Request, res: Response) {
         }
         const count = req.query.count || 1;
         const cards = await getCards(deckId, parseInt(count.toString()));
-        await markCardsAsDrawn(deckId, cards.map(card => card.code));
+        await deleteCards(deckId, cards.map(card => card.code));
         return res.json({ cards });
     } catch (err) {
         return res.status(500).send({ error: 'Failed to draw cards' });
