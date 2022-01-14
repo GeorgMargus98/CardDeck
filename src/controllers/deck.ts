@@ -8,7 +8,7 @@ import { db } from '../database/connection';
 async function createDeck (req: Request<{}, {}, { type: DeckType, shuffled: boolean }>, res: Response) {
     const { type, shuffled } = req.body;
     if (!(type && shuffled)) {
-        return res.status(400).send({ error: 'Type and shuffled are required!' });
+        return res.status(422).send({ error: 'Type and shuffled are required!' });
     }
     const trx = await db.transaction();
     try {
@@ -45,7 +45,7 @@ async function openDeck (req: Request<{id: string}, {}, {}>, res: Response) {
     try {
         const deck = await getDeck(id);
         if (!deck) {
-            return res.status(400).send({ error: 'Deck not found!' });
+            return res.status(404).send({ error: 'Deck not found!' });
         }
         const cards = await getCards(deck.id);
         res.json({
