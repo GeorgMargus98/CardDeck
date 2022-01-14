@@ -7,12 +7,15 @@ async function drawCards (req: Request, res: Response) {
         return res.status(400).send({ error: 'Invalid count' });
     }
     const count = req.query.count || 1;
+    if (!(typeof count === 'number')) {
+        return res.status(400).send({ error: 'Count has to be a number' });
+    }
     const { deckId } = req.params;
     try {
         if (!await getDeck(deckId)) {
             return res.status(404).send({ error: 'Deck not found' });
         }
-        const cards = await getCards(deckId, parseInt(count.toString()));
+        const cards = await getCards(deckId, count);
         if (cards.length < count) {
             return res.status(400).send({ error: 'Not enough cards' });
         }
