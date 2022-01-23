@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express';
 import { getCardsFromDeck } from '../services/card';
 import { CardDeckError } from '../error/cardDeckError';
 import { BadRequestError } from '../error/badRequestError';
+import { isValidUuid } from '../utils/stringUtils';
 
 async function drawCards (req: Request, res: Response) {
     try {
@@ -9,7 +10,7 @@ async function drawCards (req: Request, res: Response) {
     } catch (err) {
         return res.status(err.status).send({ error: err.message });
     }
-    const count = parseInt(req.query.count.toString());
+    const count = parseInt(req.query.count.toString()) || 1;
     const { deckId } = req.params;
     try {
         const cards = await getCardsFromDeck(deckId, count);
@@ -24,12 +25,15 @@ async function drawCards (req: Request, res: Response) {
 
 function validate(req: Request) {
     let count = parseInt(req.query.count.toString());
-    if (typeof count !== 'number' || count <= 0) {
+    if (isNaN(count)) {
+        throw new BadRequestError('Count has to be a number');
+    }
+    if (count <= 0) {
         throw new BadRequestError('Invalid count');
     }
-    count = count || 1;
-    if (!(typeof count === 'number')) {
-        throw new BadRequestError('Count has to be a number');
+    const { deckId } = req.params;
+    if (!isValidUuid(deckId)) {
+        throw new BadRequestError('Deck ID is invalid');
     }
 }
 

@@ -53,7 +53,7 @@ async function openDeck (req: Request<{id: string}, {}, {}>, res: Response) {
 }
 
 const router = Router();
-router.get('/:id', openDeck);
+router.get('/:id(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i)', openDeck);
 router.post('/', createDeck);
 
 export default router;
