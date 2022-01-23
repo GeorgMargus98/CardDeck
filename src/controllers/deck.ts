@@ -28,7 +28,7 @@ async function createDeck (req: Request<{}, {}, { type: DeckType, shuffled: bool
 }
 
 function validateCreateDeck(type: DeckType, shuffled: boolean) {
-    if (!(type && shuffled)) {
+    if (!type || shuffled === undefined) {
         throw new MissingFieldsError('Type and shuffled are required');
     }
 }
