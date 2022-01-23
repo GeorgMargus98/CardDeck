@@ -15,10 +15,7 @@ async function createDeck (req: Request<{}, {}, { type: DeckType, shuffled: bool
         const deck = await insertDeck(type, shuffled, trx);
         let indices = [...Array(type === DeckType.Full ? 52 : 32).keys()];
         if (shuffled) {
-            indices = indices
-                .map(idx => ({ idx, sort: Math.random() }))
-                .sort((a, b) => a.sort - b.sort)
-                .map(({ idx }) => idx);
+            indices = indices.sort(() => 0.5 - Math.random());
         }
         let i = 0;
         for (const suit of Object.values(Suit)) {

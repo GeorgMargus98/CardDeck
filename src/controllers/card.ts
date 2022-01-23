@@ -3,10 +3,11 @@ import { getCards, deleteCards } from '../database/queries/card';
 import { getDeck } from '../database/queries/deck';
 
 async function drawCards (req: Request, res: Response) {
-    if (req.query.count <= 0) {
+    let count = parseInt(req.query.count.toString());
+    if (typeof count !== 'number' || count <= 0) {
         return res.status(400).send({ error: 'Invalid count' });
     }
-    const count = req.query.count || 1;
+    count = count || 1;
     if (!(typeof count === 'number')) {
         return res.status(400).send({ error: 'Count has to be a number' });
     }
