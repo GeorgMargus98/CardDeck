@@ -33,7 +33,7 @@ function validate(req: Request) {
     }
     const { deckId } = req.params;
     if (!isValidUuid(deckId)) {
-        throw new BadRequestError('Deck ID is invalid');
+        throw new BadRequestError('Invalid deck ID');
     }
 }
 

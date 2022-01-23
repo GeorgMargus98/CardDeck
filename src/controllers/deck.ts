@@ -3,6 +3,7 @@ import { DeckType } from '../types/deck';
 import { createNewDeckWithCards, getDeckWithCards } from '../services/deck';
 import { MissingFieldsError } from '../error/missingFieldsError';
 import { CardDeckError } from '../error/cardDeckError';
+import { BadRequestError } from '../error/badRequestError';
 
 async function createDeck (req: Request<{}, {}, { type: DeckType, shuffled: boolean }>, res: Response) {
     const { type, shuffled } = req.body;
@@ -30,6 +31,9 @@ async function createDeck (req: Request<{}, {}, { type: DeckType, shuffled: bool
 function validateCreateDeck(type: DeckType, shuffled: boolean) {
     if (!type || shuffled === undefined) {
         throw new MissingFieldsError('Type and shuffled are required');
+    }
+    if (!(Object.values(DeckType).includes(type))) {
+        throw new BadRequestError('Invalid deck type');
     }
 }
 
