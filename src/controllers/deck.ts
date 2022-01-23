@@ -1,39 +1,37 @@
-import { getDeck, insertDeck } from '../database/queries/deck';
+import { getDeck } from '../database/queries/deck';
 import { Request, Response, Router } from 'express';
 import { DeckType } from '../types/deck';
-import { cardValues, cardValuesShort, Suit } from '../types/card';
-import { getCards, getRemainingCards, insertCardToDeck } from '../database/queries/card';
-import { db } from '../database/connection';
+import { getCards } from '../database/queries/card';
+import { createNewDeckWithCards } from '../services/deck';
+import { MissingFieldsError } from '../error/missingFieldsError';
+import { CardDeckError } from '../error/cardDeckError';
 
 async function createDeck (req: Request<{}, {}, { type: DeckType, shuffled: boolean }>, res: Response) {
     const { type, shuffled } = req.body;
-    if (!(type && shuffled)) {
-        return res.status(422).send({ error: 'Type and shuffled are required' });
-    }
-    const trx = await db.transaction();
     try {
-        const deck = await insertDeck(type, shuffled, trx);
-        let indices = [...Array(type === DeckType.Full ? 52 : 32).keys()];
-        if (shuffled) {
-            indices = indices.sort(() => 0.5 - Math.random());
-        }
-        let i = 0;
-        for (const suit of Object.values(Suit)) {
-            for (const value of type === DeckType.Full ? cardValues : cardValuesShort) {
-                await insertCardToDeck(deck.id, suit, value, indices[i], trx);
-                i++;
-            }
-        }
-        await trx.commit();
+        validateCreateDeck(type, shuffled);
+    } catch (err) {
+        return res.status(err.status).send({ error: err.message });
+    }
+    try {
+        const { deck, remainingCards } = await createNewDeckWithCards(type, shuffled);
         return res.json({
             deckId: deck.id,
             type: deck.type,
             shuffled: deck.shuffled,
-            remaining: await getRemainingCards(deck.id)
+            remaining: remainingCards,
         });
     } catch (err) {
-        trx.rollback();
+        if (err instanceof CardDeckError) {
+            return res.status(err.status).send({ error: err.message });
+        }
         return res.status(500).send({ error: 'Failed to create deck' });
+    }
+}
+
+function validateCreateDeck(type: DeckType, shuffled: boolean) {
+    if (!(type && shuffled)) {
+        throw new MissingFieldsError('Type and shuffled are required');
     }
 }
 

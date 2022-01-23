@@ -1,4 +1,4 @@
-import {CardDeckError} from "./cardDeckError";
+import { CardDeckError } from './cardDeckError';
 
 export class NotEnoughCardsError extends CardDeckError {
     constructor() {
