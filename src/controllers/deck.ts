@@ -1,8 +1,6 @@
-import { getDeck } from '../database/queries/deck';
 import { Request, Response, Router } from 'express';
 import { DeckType } from '../types/deck';
-import { getCards } from '../database/queries/card';
-import { createNewDeckWithCards } from '../services/deck';
+import { createNewDeckWithCards, getDeckWithCards } from '../services/deck';
 import { MissingFieldsError } from '../error/missingFieldsError';
 import { CardDeckError } from '../error/cardDeckError';
 
@@ -38,11 +36,7 @@ function validateCreateDeck(type: DeckType, shuffled: boolean) {
 async function openDeck (req: Request<{id: string}, {}, {}>, res: Response) {
     const { id } = req.params;
     try {
-        const deck = await getDeck(id);
-        if (!deck) {
-            return res.status(404).send({ error: 'Deck not found' });
-        }
-        const cards = await getCards(deck.id);
+        const { deck, cards } = await getDeckWithCards(id);
         res.json({
             deckId: deck.id,
             type: deck.type,
@@ -51,6 +45,9 @@ async function openDeck (req: Request<{id: string}, {}, {}>, res: Response) {
             cards
         });
     } catch (err) {
+        if (err instanceof CardDeckError) {
+            return res.status(err.status).send({ error: err.message });
+        }
         return res.status(500).send({ error: 'Failed to open deck' });
     }
 }

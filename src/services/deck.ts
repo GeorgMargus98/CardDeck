@@ -1,9 +1,10 @@
 import { Deck, DeckType } from '../types/deck';
 import { db } from '../database/connection';
-import { insertDeck } from '../database/queries/deck';
+import { getDeck, insertDeck } from '../database/queries/deck';
 import { cardValues, cardValuesShort, Suit } from '../types/card';
-import { getRemainingCards, insertCardToDeck } from '../database/queries/card';
+import { getCards, getRemainingCards, insertCardToDeck } from '../database/queries/card';
 import { Knex } from 'knex';
+import { MissingDeckError } from '../error/missingDeckError';
 
 export async function createNewDeckWithCards(type: DeckType, shuffled: boolean) {
     const trx = await db.transaction();
@@ -39,4 +40,13 @@ async function createCards(deckId: string, type: DeckType, indices: number[], tr
             i++;
         }
     }
+}
+
+export async function getDeckWithCards(deckId: string) {
+    const deck = await getDeck(deckId);
+    if (!deck) {
+        throw new MissingDeckError();
+    }
+    const cards = await getCards(deck.id);
+    return { deck, cards };
 }
